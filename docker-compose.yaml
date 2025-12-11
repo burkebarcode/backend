@@ -1,0 +1,120 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: gateway
+    ports:
+      - "9000:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api-auth
+      - api-users
+      - api-posts
+      - api-venues
+
+  api-auth:
+    build:
+      context: .
+      dockerfile: services/api-auth/Dockerfile
+    container_name: api-auth
+    environment:
+      ADDR: ":8080"
+      DATABASE_URL: "postgres://bc_user:TERXvBWQ7nmy7L8pyAoC@postgres:5432/barcode?sslmode=disable"
+      ENV: "dev"
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JWT_KEY_ID: ${JWT_KEY_ID:-default}
+      JWT_ISSUER: ${JWT_ISSUER:-barcode-auth}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-barcode-api}
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  api-users:
+    build:
+      context: .
+      dockerfile: services/api-users/Dockerfile
+    container_name: api-users
+    environment:
+      ADDR: ":8080"
+      DATABASE_URL: "postgres://bc_user:TERXvBWQ7nmy7L8pyAoC@postgres:5432/barcode?sslmode=disable"
+      ENV: "dev"
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  api-posts:
+    build:
+      context: .
+      dockerfile: services/api-posts/Dockerfile
+    container_name: api-posts
+    environment:
+      ADDR: ":8080"
+      DATABASE_URL: "postgres://bc_user:TERXvBWQ7nmy7L8pyAoC@postgres:5432/barcode?sslmode=disable"
+      ENV: "local"
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JWT_KEY_ID: ${JWT_KEY_ID:-default}
+      JWT_ISSUER: ${JWT_ISSUER:-barcode-auth}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-barcode-api}
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  api-venues:
+    build:
+      context: .
+      dockerfile: services/api-venues/Dockerfile
+    container_name: api-venues
+    environment:
+      ADDR: ":8080"
+      DATABASE_URL: "postgres://bc_user:TERXvBWQ7nmy7L8pyAoC@postgres:5432/barcode?sslmode=disable"
+      ENV: "local"
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JWT_KEY_ID: ${JWT_KEY_ID:-default}
+      JWT_ISSUER: ${JWT_ISSUER:-barcode-auth}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-barcode-api}
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: bc_user
+      POSTGRES_PASSWORD: TERXvBWQ7nmy7L8pyAoC
+      POSTGRES_DB: barcode
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+ 
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  default:
+    name: barcode-net
+
+volumes:
+  postgres_data:
+  redis_data:
+

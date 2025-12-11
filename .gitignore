@@ -1,0 +1,32 @@
+# Environment variables
+.env
+
+# RSA keys
+*.key
+*.pub
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work.sum
+
+# Build output
+/bin/
+/dist/
+*.swp
+*.swo
+*~
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
