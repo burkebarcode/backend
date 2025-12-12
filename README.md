@@ -1,8 +1,3 @@
-# Deploy the users
-fly apps create barcode-users-api-1
-fly secrets set DATABASE_URL="" -c fly.users.toml
-fly deploy -c fly.users.toml
-
 # Deploy postgres
 fly apps create barcode-db-1
 fly secrets set POSTGRES_PASSWORD="supersecretpassword" -c fly.db.toml
@@ -16,3 +11,6 @@ fly volumes create pg_data \
 
 fly deploy -c ./db/fly.db.toml
 
+# USAGE
+
+make create DATABASE_URL="" PASSWORD=""
