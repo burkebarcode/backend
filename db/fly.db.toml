@@ -1,0 +1,26 @@
+app = "barcode-db-01234"
+
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  POSTGRES_DB = "barcode"
+  POSTGRES_USER = "bc_user"
+  # DO NOT put plaintext password here; use secrets instead
+
+[http_service]
+  internal_port = 5432
+  force_https = false
+  auto_stop_machines = false
+  auto_start_machines = false
+  min_machines_running = 1
+
+[vm]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+
+[mounts]
+  source = "pg_data"
+  destination = "/var/lib/postgresql/data"

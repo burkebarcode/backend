@@ -1,11 +1,10 @@
-app = "backend-users-api"
-
+app = "barcode-users-api-1"
 primary_region = "iad"
 
 [build]
   dockerfile = "Dockerfile"
   [build.args]
-    SERVICE_PATH = "./services/users-api"
+    SERVICE_PATH = "services/api-users/cmd/api"
 
 [env]
   PORT = "8080"
@@ -13,7 +12,10 @@ primary_region = "iad"
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = false
+  auto_stop_machines = true      # turn this ON to save money
   auto_start_machines = true
-  min_machines_running = 1
+  min_machines_running = 0       # allow scale-to-zero
 
+[vm]
+  size = "shared-cpu-1x"         # smallest shared CPU
+  memory = "256mb" 

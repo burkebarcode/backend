@@ -25,6 +25,7 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByEmailOrHandle(ctx context.Context, email string) (User, error)
 	GetUserByID(ctx context.Context, id pgtype.UUID) (User, error)
+	GetVenueByExternalPlaceID(ctx context.Context, externalPlaceID pgtype.Text) (Venue, error)
 	GetVenueByID(ctx context.Context, id pgtype.UUID) (Venue, error)
 	GetWinePostDetails(ctx context.Context, id pgtype.UUID) (WinePostDetail, error)
 	InsertRefreshToken(ctx context.Context, arg InsertRefreshTokenParams) (RefreshToken, error)

@@ -20,3 +20,6 @@ WHERE (is_public = 1 OR user_id = $1)
    OR address ILIKE '%' || $2 || '%')
 ORDER BY created_at DESC
 LIMIT $3;
+
+-- name: GetVenueByExternalPlaceID :one
+SELECT * FROM venues WHERE external_place_id = $1 LIMIT 1;

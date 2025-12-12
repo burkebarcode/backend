@@ -80,6 +80,37 @@ func (q *Queries) CreateVenue(ctx context.Context, arg CreateVenueParams) (Venue
 	return i, err
 }
 
+const getVenueByExternalPlaceID = `-- name: GetVenueByExternalPlaceID :one
+SELECT id, name, description, venue_type, address, city, state, country, lat, lng, has_beer, has_wine, has_cocktails, map_provider, external_place_id, created_at, updated_at, user_id, is_public FROM venues WHERE external_place_id = $1 LIMIT 1
+`
+
+func (q *Queries) GetVenueByExternalPlaceID(ctx context.Context, externalPlaceID pgtype.Text) (Venue, error) {
+	row := q.db.QueryRow(ctx, getVenueByExternalPlaceID, externalPlaceID)
+	var i Venue
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.VenueType,
+		&i.Address,
+		&i.City,
+		&i.State,
+		&i.Country,
+		&i.Lat,
+		&i.Lng,
+		&i.HasBeer,
+		&i.HasWine,
+		&i.HasCocktails,
+		&i.MapProvider,
+		&i.ExternalPlaceID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+		&i.IsPublic,
+	)
+	return i, err
+}
+
 const getVenueByID = `-- name: GetVenueByID :one
 SELECT id, name, description, venue_type, address, city, state, country, lat, lng, has_beer, has_wine, has_cocktails, map_provider, external_place_id, created_at, updated_at, user_id, is_public FROM venues WHERE id = $1
 `
