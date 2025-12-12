@@ -1,0 +1,22 @@
+app = "barcode-auth-api-1"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+  [build.args]
+    SERVICE_PATH = "services/api-auth/cmd/api"
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[vm]
+  size = "shared-cpu-1x" 
+  memory = "256mb" 
+
