@@ -8,7 +8,7 @@ primary_region = "iad"
 [env]
   POSTGRES_DB = "barcode"
   POSTGRES_USER = "bc_user"
-  # DO NOT put plaintext password here; use secrets instead
+  PGDATA = "/data/pg"
 
 [http_service]
   internal_port = 5432
@@ -23,4 +23,4 @@ primary_region = "iad"
 
 [mounts]
   source = "pg_data"
-  destination = "/var/lib/postgresql/data"
+  destination = "/data"

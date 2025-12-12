@@ -47,7 +47,7 @@ create-users:
 		JWT_AUDIENCE="$(JWT_AUDIENCE)" \
 		-c $(USERS_TOML)
 	@echo "==> Deploying users API"
-	@fly deploy -c $(USERS_TOML) -a $(APP_USERS)
+	@fly deploy -c $(USERS_TOML) --ha=false -a $(APP_USERS)
 
 delete-users:
 	@echo "==> Destroying users API app"
@@ -80,7 +80,7 @@ create-venues:
 		JWT_AUDIENCE="$(JWT_AUDIENCE)" \
 		-c $(VENUES_TOML)
 	@echo "==> Deploying venues API"
-	@fly deploy -c $(VENUES_TOML) -a $(APP_VENUES)
+	@fly deploy --ha=false -c $(VENUES_TOML) -a $(APP_VENUES)
 
 delete-venues:
 	@echo "==> Destroying venues API app"
@@ -113,7 +113,7 @@ create-posts:
 		JWT_AUDIENCE="$(JWT_AUDIENCE)" \
 		-c $(POSTS_TOML)
 	@echo "==> Deploying posts API"
-	@fly deploy -c $(POSTS_TOML) -a $(APP_POSTS)
+	@fly deploy --ha=false -c $(POSTS_TOML) -a $(APP_POSTS)
 
 delete-posts:
 	@echo "==> Destroying posts API app"
@@ -148,7 +148,7 @@ create-auth:
 		JWT_AUDIENCE="$(JWT_AUDIENCE)" \
 		-c $(AUTH_TOML)
 	@echo "==> Deploying auth API"
-	@fly deploy -c $(AUTH_TOML) -a $(APP_AUTH)
+	@fly deploy -c $(AUTH_TOML) --ha=false -a $(APP_AUTH)
 
 delete-auth:
 	@echo "==> Destroying auth API app"
@@ -177,7 +177,7 @@ create-db:
 	@echo "==> Setting DB secrets"
 	@fly secrets set POSTGRES_PASSWORD="$(PASSWORD)" -c $(DB_TOML)
 	@echo "==> Deploying Postgres (volume must already exist)"
-	@fly deploy -c $(DB_TOML) -a $(APP_DB)
+	@fly deploy -c $(DB_TOML) --ha=false -a $(APP_DB)
 
 delete-db:
 	@echo "==> Destroying DB app (volume preserved)"
@@ -195,7 +195,7 @@ create-gateway:
 	@echo "==> Creating gateway app (if not exists)"
 	@fly apps list | grep -q $(APP_GATEWAY) || fly apps create $(APP_GATEWAY)
 	@echo "==> Deploying gateway"
-	@fly deploy -c $(GATEWAY_TOML) -a $(APP_GATEWAY)
+	@fly deploy -c $(GATEWAY_TOML) --ha=false -a $(APP_GATEWAY)
 
 delete-gateway:
 	@echo "==> Destroying gateway app"
