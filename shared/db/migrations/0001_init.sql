@@ -101,6 +101,10 @@ CREATE TABLE wine_post_details (
   tannin TEXT,
   acidity TEXT,
   wine_style TEXT,
+  varietal TEXT,
+  region TEXT,
+  vintage TEXT,
+  winery TEXT,
 
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()

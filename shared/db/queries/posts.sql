@@ -9,8 +9,8 @@ VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
 
 -- name: CreateWinePostDetails :one
-INSERT INTO wine_post_details (sweetness, body, tannin, acidity, wine_style)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO wine_post_details (sweetness, body, tannin, acidity, wine_style, varietal, region, vintage, winery)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING *;
 
 -- name: CreateCocktailPostDetails :one
@@ -50,7 +50,7 @@ DELETE FROM posts WHERE id = $1;
 
 -- name: UpdateWinePostDetails :one
 UPDATE wine_post_details
-SET sweetness = $2, body = $3, tannin = $4, acidity = $5, wine_style = $6
+SET sweetness = $2, body = $3, tannin = $4, acidity = $5, wine_style = $6, varietal = $7, region = $8, vintage = $9, winery = $10
 WHERE id = $1
 RETURNING *;
 

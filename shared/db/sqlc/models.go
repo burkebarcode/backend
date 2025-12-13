@@ -40,8 +40,8 @@ type Post struct {
 	VenueID               pgtype.UUID        `json:"venue_id"`
 	DrinkName             string             `json:"drink_name"`
 	DrinkCategory         string             `json:"drink_category"`
-	Stars                 int32              `json:"stars"`
-	Notes                 string             `json:"notes"`
+	Stars                 pgtype.Int4        `json:"stars"`
+	Notes                 pgtype.Text        `json:"notes"`
 	WinePostDetailsID     pgtype.UUID        `json:"wine_post_details_id"`
 	BeerPostDetailsID     pgtype.UUID        `json:"beer_post_details_id"`
 	CocktailPostDetailsID pgtype.UUID        `json:"cocktail_post_details_id"`
@@ -104,4 +104,8 @@ type WinePostDetail struct {
 	WineStyle pgtype.Text        `json:"wine_style"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	Varietal  pgtype.Text        `json:"varietal"`
+	Region    pgtype.Text        `json:"region"`
+	Vintage   pgtype.Text        `json:"vintage"`
+	Winery    pgtype.Text        `json:"winery"`
 }
