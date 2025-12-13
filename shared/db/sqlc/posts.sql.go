@@ -319,6 +319,48 @@ func (q *Queries) ListPosts(ctx context.Context, limit int32) ([]Post, error) {
 	return items, nil
 }
 
+const listPostsByExternalPlaceID = `-- name: ListPostsByExternalPlaceID :many
+SELECT p.id, p.user_id, p.venue_id, p.drink_name, p.drink_category, p.stars, p.notes, p.wine_post_details_id, p.beer_post_details_id, p.cocktail_post_details_id, p.price_cents, p.photo_url, p.created_at, p.updated_at FROM posts p
+JOIN venues v ON p.venue_id = v.id
+WHERE v.external_place_id = $1
+ORDER BY p.created_at DESC
+`
+
+func (q *Queries) ListPostsByExternalPlaceID(ctx context.Context, externalPlaceID pgtype.Text) ([]Post, error) {
+	rows, err := q.db.Query(ctx, listPostsByExternalPlaceID, externalPlaceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Post
+	for rows.Next() {
+		var i Post
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.VenueID,
+			&i.DrinkName,
+			&i.DrinkCategory,
+			&i.Stars,
+			&i.Notes,
+			&i.WinePostDetailsID,
+			&i.BeerPostDetailsID,
+			&i.CocktailPostDetailsID,
+			&i.PriceCents,
+			&i.PhotoUrl,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateBeerPostDetails = `-- name: UpdateBeerPostDetails :one
 UPDATE beer_post_details
 SET brewery = $2, abv = $3, ibu = $4, acidity = $5, beer_style = $6, serving = $7

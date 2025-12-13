@@ -41,7 +41,11 @@ services:
     environment:
       ADDR: ":8080"
       DATABASE_URL: "postgres://bc_user:TERXvBWQ7nmy7L8pyAoC@postgres:5432/barcode?sslmode=disable"
-      ENV: "dev"
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JWT_KEY_ID: ${JWT_KEY_ID:-default}
+      JWT_ISSUER: ${JWT_ISSUER:-barcode-auth}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-barcode-api}
+      ENV: "local"
     depends_on:
       - postgres
       - redis

@@ -30,6 +30,7 @@ type Querier interface {
 	GetWinePostDetails(ctx context.Context, id pgtype.UUID) (WinePostDetail, error)
 	InsertRefreshToken(ctx context.Context, arg InsertRefreshTokenParams) (RefreshToken, error)
 	ListPosts(ctx context.Context, limit int32) ([]Post, error)
+	ListPostsByExternalPlaceID(ctx context.Context, externalPlaceID pgtype.Text) ([]Post, error)
 	ListUsers(ctx context.Context, limit int32) ([]User, error)
 	ListVenues(ctx context.Context, arg ListVenuesParams) ([]Venue, error)
 	RevokeAllRefreshTokensForUser(ctx context.Context, userID pgtype.UUID) error

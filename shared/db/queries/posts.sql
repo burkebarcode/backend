@@ -24,6 +24,12 @@ SELECT * FROM posts WHERE id = $1;
 -- name: ListPosts :many
 SELECT * FROM posts ORDER BY created_at DESC LIMIT $1;
 
+-- name: ListPostsByExternalPlaceID :many
+SELECT p.* FROM posts p
+JOIN venues v ON p.venue_id = v.id
+WHERE v.external_place_id = $1
+ORDER BY p.created_at DESC;
+
 -- name: GetWinePostDetails :one
 SELECT * FROM wine_post_details WHERE id = $1;
 
