@@ -64,6 +64,12 @@ services:
       JWT_KEY_ID: ${JWT_KEY_ID:-default}
       JWT_ISSUER: ${JWT_ISSUER:-barcode-auth}
       JWT_AUDIENCE: ${JWT_AUDIENCE:-barcode-api}
+      TIGRIS_ENDPOINT: https://t3.storage.dev
+      TIGRIS_ACCESS_KEY: tid_bGGuAAEhMQduhmpXANbjvVnbyHSBapnUa_zsamcbqEBC_WAiJH
+      TIGRIS_BUCKET: barcode-s3
+      TIGRIS_REGION: auto
+      TIGRIS_SECRET_KEY: "tsec_t3o7dwPe_jLs_QXbPWR4R44DRfosFnQUOm5v+ny9To9MeKZ8azmMq2Y5LbO1FwgaRqDSMF"
+
     depends_on:
       - postgres
       - redis

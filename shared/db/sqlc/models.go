@@ -34,6 +34,23 @@ type CocktailPostDetail struct {
 	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
 }
 
+type Medium struct {
+	ID                 pgtype.UUID        `json:"id"`
+	OrgID              pgtype.UUID        `json:"org_id"`
+	UserID             pgtype.UUID        `json:"user_id"`
+	Bucket             string             `json:"bucket"`
+	ObjectKey          string             `json:"object_key"`
+	ContentType        string             `json:"content_type"`
+	SizeBytes          int32              `json:"size_bytes"`
+	Width              pgtype.Int4        `json:"width"`
+	Height             pgtype.Int4        `json:"height"`
+	Status             string             `json:"status"`
+	Etag               pgtype.Text        `json:"etag"`
+	CreatedAt          pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt          pgtype.Timestamptz `json:"updated_at"`
+	ThumbnailObjectKey pgtype.Text        `json:"thumbnail_object_key"`
+}
+
 type Post struct {
 	ID                    pgtype.UUID        `json:"id"`
 	UserID                pgtype.UUID        `json:"user_id"`
@@ -49,6 +66,14 @@ type Post struct {
 	PhotoUrl              pgtype.Text        `json:"photo_url"`
 	CreatedAt             pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt             pgtype.Timestamptz `json:"updated_at"`
+}
+
+type PostMedium struct {
+	ID        pgtype.UUID        `json:"id"`
+	PostID    pgtype.UUID        `json:"post_id"`
+	MediaID   pgtype.UUID        `json:"media_id"`
+	SortOrder int32              `json:"sort_order"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
 type RefreshToken struct {
@@ -102,10 +127,10 @@ type WinePostDetail struct {
 	Tannin    pgtype.Text        `json:"tannin"`
 	Acidity   pgtype.Text        `json:"acidity"`
 	WineStyle pgtype.Text        `json:"wine_style"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
 	Varietal  pgtype.Text        `json:"varietal"`
 	Region    pgtype.Text        `json:"region"`
 	Vintage   pgtype.Text        `json:"vintage"`
 	Winery    pgtype.Text        `json:"winery"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
 }

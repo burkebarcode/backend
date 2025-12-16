@@ -148,7 +148,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 const createWinePostDetails = `-- name: CreateWinePostDetails :one
 INSERT INTO wine_post_details (sweetness, body, tannin, acidity, wine_style, varietal, region, vintage, winery)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-RETURNING id, sweetness, body, tannin, acidity, wine_style, created_at, updated_at, varietal, region, vintage, winery
+RETURNING id, sweetness, body, tannin, acidity, wine_style, varietal, region, vintage, winery, created_at, updated_at
 `
 
 type CreateWinePostDetailsParams struct {
@@ -183,12 +183,12 @@ func (q *Queries) CreateWinePostDetails(ctx context.Context, arg CreateWinePostD
 		&i.Tannin,
 		&i.Acidity,
 		&i.WineStyle,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.Varietal,
 		&i.Region,
 		&i.Vintage,
 		&i.Winery,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -273,7 +273,7 @@ func (q *Queries) GetPostByID(ctx context.Context, id pgtype.UUID) (Post, error)
 }
 
 const getWinePostDetails = `-- name: GetWinePostDetails :one
-SELECT id, sweetness, body, tannin, acidity, wine_style, created_at, updated_at, varietal, region, vintage, winery FROM wine_post_details WHERE id = $1
+SELECT id, sweetness, body, tannin, acidity, wine_style, varietal, region, vintage, winery, created_at, updated_at FROM wine_post_details WHERE id = $1
 `
 
 func (q *Queries) GetWinePostDetails(ctx context.Context, id pgtype.UUID) (WinePostDetail, error) {
@@ -286,12 +286,12 @@ func (q *Queries) GetWinePostDetails(ctx context.Context, id pgtype.UUID) (WineP
 		&i.Tannin,
 		&i.Acidity,
 		&i.WineStyle,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.Varietal,
 		&i.Region,
 		&i.Vintage,
 		&i.Winery,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -512,7 +512,7 @@ const updateWinePostDetails = `-- name: UpdateWinePostDetails :one
 UPDATE wine_post_details
 SET sweetness = $2, body = $3, tannin = $4, acidity = $5, wine_style = $6, varietal = $7, region = $8, vintage = $9, winery = $10
 WHERE id = $1
-RETURNING id, sweetness, body, tannin, acidity, wine_style, created_at, updated_at, varietal, region, vintage, winery
+RETURNING id, sweetness, body, tannin, acidity, wine_style, varietal, region, vintage, winery, created_at, updated_at
 `
 
 type UpdateWinePostDetailsParams struct {
@@ -549,12 +549,12 @@ func (q *Queries) UpdateWinePostDetails(ctx context.Context, arg UpdateWinePostD
 		&i.Tannin,
 		&i.Acidity,
 		&i.WineStyle,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.Varietal,
 		&i.Region,
 		&i.Vintage,
 		&i.Winery,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

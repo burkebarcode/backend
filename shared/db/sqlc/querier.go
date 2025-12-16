@@ -11,17 +11,24 @@ import (
 )
 
 type Querier interface {
+	AttachMediaToPost(ctx context.Context, arg AttachMediaToPostParams) (PostMedium, error)
 	CreateBeerPostDetails(ctx context.Context, arg CreateBeerPostDetailsParams) (BeerPostDetail, error)
 	CreateCocktailPostDetails(ctx context.Context, arg CreateCocktailPostDetailsParams) (CocktailPostDetail, error)
+	CreateMedia(ctx context.Context, arg CreateMediaParams) (Medium, error)
 	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateVenue(ctx context.Context, arg CreateVenueParams) (Venue, error)
 	CreateWinePostDetails(ctx context.Context, arg CreateWinePostDetailsParams) (WinePostDetail, error)
 	DeletePost(ctx context.Context, id pgtype.UUID) error
+	DeleteStagedMediaOlderThan(ctx context.Context, createdAt pgtype.Timestamptz) error
 	GetBeerPostDetails(ctx context.Context, id pgtype.UUID) (BeerPostDetail, error)
 	GetCocktailPostDetails(ctx context.Context, id pgtype.UUID) (CocktailPostDetail, error)
+	GetMediaByID(ctx context.Context, id pgtype.UUID) (Medium, error)
+	GetMediaByObjectKey(ctx context.Context, objectKey string) (Medium, error)
+	GetMediaForPost(ctx context.Context, postID pgtype.UUID) ([]Medium, error)
 	GetPostByID(ctx context.Context, id pgtype.UUID) (Post, error)
 	GetRefreshTokenByHash(ctx context.Context, tokenHash string) (RefreshToken, error)
+	GetThumbnailForPost(ctx context.Context, dollar_1 pgtype.Text) (string, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByEmailOrHandle(ctx context.Context, email string) (User, error)
 	GetUserByID(ctx context.Context, id pgtype.UUID) (User, error)
@@ -38,6 +45,8 @@ type Querier interface {
 	SearchVenues(ctx context.Context, arg SearchVenuesParams) ([]Venue, error)
 	UpdateBeerPostDetails(ctx context.Context, arg UpdateBeerPostDetailsParams) (BeerPostDetail, error)
 	UpdateCocktailPostDetails(ctx context.Context, arg UpdateCocktailPostDetailsParams) (CocktailPostDetail, error)
+	UpdateMediaMetadata(ctx context.Context, arg UpdateMediaMetadataParams) (Medium, error)
+	UpdateMediaStatus(ctx context.Context, arg UpdateMediaStatusParams) (Medium, error)
 	UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error)
 	UpdateWinePostDetails(ctx context.Context, arg UpdateWinePostDetailsParams) (WinePostDetail, error)
 }
