@@ -24,7 +24,7 @@ JWT_KEY_ID := barcode-v1
 JWT_ISSUER := barcode-auth
 JWT_AUDIENCE := barcode-api
 
-.PHONY: create delete status \
+.PHONY: create delete delete-safe status check-volumes \
         create-users create-venues create-posts create-auth create-db create-gateway \
         delete-users delete-venues delete-posts delete-auth delete-db delete-gateway \
         set-users-secrets set-venues-secrets set-posts-secrets set-auth-secrets set-db-secrets set-all-secrets
@@ -174,14 +174,25 @@ create-db:
 	@test -n "$(PASSWORD)" || (echo "ERROR: PASSWORD is required"; exit 1)
 	@echo "==> Creating DB app (if not exists)"
 	@fly apps list | grep -q $(APP_DB) || fly apps create $(APP_DB)
+	@echo "==> Checking for existing pg_data volume..."
+	@if ! fly volumes list -a $(APP_DB) 2>/dev/null | grep -q pg_data; then \
+		echo "==> Volume 'pg_data' not found. Creating new volume..."; \
+		fly volumes create pg_data --size 1 --region iad -a $(APP_DB); \
+	else \
+		echo "==> Volume 'pg_data' already exists. Will reuse it."; \
+	fi
 	@echo "==> Setting DB secrets"
 	@fly secrets set POSTGRES_PASSWORD="$(PASSWORD)" -c $(DB_TOML)
-	@echo "==> Deploying Postgres (volume must already exist)"
+	@echo "==> Deploying Postgres"
 	@fly deploy -c $(DB_TOML) --ha=false -a $(APP_DB)
 
 delete-db:
-	@echo "==> Destroying DB app (volume preserved)"
-	@fly apps destroy $(APP_DB) --yes || true
+	@echo "==> WARNING: This will destroy the DB app but preserve the volume"
+	@echo "==> Volume 'pg_data' will remain and can be reattached"
+	@echo "==> To list volumes: fly volumes list -a $(APP_DB)"
+	@echo "==> To delete volume: fly volumes delete <volume-id> -a $(APP_DB)"
+	@fly scale count 0 -a $(APP_DB)
+	#@fly apps destroy $(APP_DB) --yes || true
 
 set-db-secrets:
 	@test -n "$(PASSWORD)" || (echo "ERROR: PASSWORD is required"; exit 1)
@@ -210,6 +221,15 @@ set-all-secrets: set-users-secrets set-venues-secrets set-posts-secrets set-auth
 # DELETE ALL
 # ----------------------
 delete: delete-users delete-venues delete-posts delete-auth delete-db delete-gateway
+
+# Delete everything EXCEPT database (preserves data)
+delete-safe: delete-users delete-venues delete-posts delete-auth delete-gateway
+	@echo "==> Skipped database deletion. Data is preserved."
+
+# Check database volume status
+check-volumes:
+	@echo "==> Checking volumes for $(APP_DB):"
+	@fly volumes list -a $(APP_DB) || echo "No volumes found or app doesn't exist"
 
 # ----------------------
 # STATUS
