@@ -96,21 +96,22 @@ func (q *Queries) CreateCocktailPostDetails(ctx context.Context, arg CreateCockt
 }
 
 const createPost = `-- name: CreatePost :one
-INSERT INTO posts (user_id, venue_id, drink_name, drink_category, stars, notes, beer_post_details_id, wine_post_details_id, cocktail_post_details_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-RETURNING id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at
+INSERT INTO posts (user_id, venue_id, drink_name, drink_category, stars, score, notes, beer_post_details_id, wine_post_details_id, cocktail_post_details_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+RETURNING id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score
 `
 
 type CreatePostParams struct {
-	UserID                pgtype.UUID `json:"user_id"`
-	VenueID               pgtype.UUID `json:"venue_id"`
-	DrinkName             string      `json:"drink_name"`
-	DrinkCategory         string      `json:"drink_category"`
-	Stars                 pgtype.Int4 `json:"stars"`
-	Notes                 pgtype.Text `json:"notes"`
-	BeerPostDetailsID     pgtype.UUID `json:"beer_post_details_id"`
-	WinePostDetailsID     pgtype.UUID `json:"wine_post_details_id"`
-	CocktailPostDetailsID pgtype.UUID `json:"cocktail_post_details_id"`
+	UserID                pgtype.UUID    `json:"user_id"`
+	VenueID               pgtype.UUID    `json:"venue_id"`
+	DrinkName             string         `json:"drink_name"`
+	DrinkCategory         string         `json:"drink_category"`
+	Stars                 pgtype.Int4    `json:"stars"`
+	Score                 pgtype.Numeric `json:"score"`
+	Notes                 pgtype.Text    `json:"notes"`
+	BeerPostDetailsID     pgtype.UUID    `json:"beer_post_details_id"`
+	WinePostDetailsID     pgtype.UUID    `json:"wine_post_details_id"`
+	CocktailPostDetailsID pgtype.UUID    `json:"cocktail_post_details_id"`
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
@@ -120,6 +121,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		arg.DrinkName,
 		arg.DrinkCategory,
 		arg.Stars,
+		arg.Score,
 		arg.Notes,
 		arg.BeerPostDetailsID,
 		arg.WinePostDetailsID,
@@ -141,6 +143,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		&i.PhotoUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Score,
 	)
 	return i, err
 }
@@ -247,7 +250,7 @@ func (q *Queries) GetCocktailPostDetails(ctx context.Context, id pgtype.UUID) (C
 }
 
 const getPostByID = `-- name: GetPostByID :one
-SELECT id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at FROM posts WHERE id = $1
+SELECT id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score FROM posts WHERE id = $1
 `
 
 func (q *Queries) GetPostByID(ctx context.Context, id pgtype.UUID) (Post, error) {
@@ -268,6 +271,7 @@ func (q *Queries) GetPostByID(ctx context.Context, id pgtype.UUID) (Post, error)
 		&i.PhotoUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Score,
 	)
 	return i, err
 }
@@ -297,7 +301,7 @@ func (q *Queries) GetWinePostDetails(ctx context.Context, id pgtype.UUID) (WineP
 }
 
 const listPosts = `-- name: ListPosts :many
-SELECT id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at FROM posts ORDER BY created_at DESC LIMIT $1
+SELECT id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score FROM posts ORDER BY created_at DESC LIMIT $1
 `
 
 func (q *Queries) ListPosts(ctx context.Context, limit int32) ([]Post, error) {
@@ -324,6 +328,7 @@ func (q *Queries) ListPosts(ctx context.Context, limit int32) ([]Post, error) {
 			&i.PhotoUrl,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Score,
 		); err != nil {
 			return nil, err
 		}
@@ -336,7 +341,7 @@ func (q *Queries) ListPosts(ctx context.Context, limit int32) ([]Post, error) {
 }
 
 const listPostsByExternalPlaceID = `-- name: ListPostsByExternalPlaceID :many
-SELECT p.id, p.user_id, p.venue_id, p.drink_name, p.drink_category, p.stars, p.notes, p.wine_post_details_id, p.beer_post_details_id, p.cocktail_post_details_id, p.price_cents, p.photo_url, p.created_at, p.updated_at FROM posts p
+SELECT p.id, p.user_id, p.venue_id, p.drink_name, p.drink_category, p.stars, p.notes, p.wine_post_details_id, p.beer_post_details_id, p.cocktail_post_details_id, p.price_cents, p.photo_url, p.created_at, p.updated_at, p.score FROM posts p
 JOIN venues v ON p.venue_id = v.id
 WHERE v.external_place_id = $1
 ORDER BY p.created_at DESC
@@ -366,6 +371,7 @@ func (q *Queries) ListPostsByExternalPlaceID(ctx context.Context, externalPlaceI
 			&i.PhotoUrl,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Score,
 		); err != nil {
 			return nil, err
 		}
@@ -469,16 +475,17 @@ func (q *Queries) UpdateCocktailPostDetails(ctx context.Context, arg UpdateCockt
 
 const updatePost = `-- name: UpdatePost :one
 UPDATE posts
-SET drink_name = $2, stars = $3, notes = $4, updated_at = NOW()
+SET drink_name = $2, stars = $3, score = $4, notes = $5, updated_at = NOW()
 WHERE id = $1
-RETURNING id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at
+RETURNING id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score
 `
 
 type UpdatePostParams struct {
-	ID        pgtype.UUID `json:"id"`
-	DrinkName string      `json:"drink_name"`
-	Stars     pgtype.Int4 `json:"stars"`
-	Notes     pgtype.Text `json:"notes"`
+	ID        pgtype.UUID    `json:"id"`
+	DrinkName string         `json:"drink_name"`
+	Stars     pgtype.Int4    `json:"stars"`
+	Score     pgtype.Numeric `json:"score"`
+	Notes     pgtype.Text    `json:"notes"`
 }
 
 func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
@@ -486,6 +493,7 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, e
 		arg.ID,
 		arg.DrinkName,
 		arg.Stars,
+		arg.Score,
 		arg.Notes,
 	)
 	var i Post
@@ -504,6 +512,7 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, e
 		&i.PhotoUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Score,
 	)
 	return i, err
 }

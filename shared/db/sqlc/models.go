@@ -66,6 +66,7 @@ type Post struct {
 	PhotoUrl              pgtype.Text        `json:"photo_url"`
 	CreatedAt             pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt             pgtype.Timestamptz `json:"updated_at"`
+	Score                 pgtype.Numeric     `json:"score"`
 }
 
 type PostMedium struct {

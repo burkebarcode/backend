@@ -1,6 +1,6 @@
 -- name: CreatePost :one
-INSERT INTO posts (user_id, venue_id, drink_name, drink_category, stars, notes, beer_post_details_id, wine_post_details_id, cocktail_post_details_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+INSERT INTO posts (user_id, venue_id, drink_name, drink_category, stars, score, notes, beer_post_details_id, wine_post_details_id, cocktail_post_details_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING *;
 
 -- name: CreateBeerPostDetails :one
@@ -41,7 +41,7 @@ SELECT * FROM cocktail_post_details WHERE id = $1;
 
 -- name: UpdatePost :one
 UPDATE posts
-SET drink_name = $2, stars = $3, notes = $4, updated_at = NOW()
+SET drink_name = $2, stars = $3, score = $4, notes = $5, updated_at = NOW()
 WHERE id = $1
 RETURNING *;
 
