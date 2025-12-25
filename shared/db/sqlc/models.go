@@ -20,6 +20,43 @@ type BeerPostDetail struct {
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
 }
 
+type Beverage struct {
+	ID              pgtype.UUID        `json:"id"`
+	Name            string             `json:"name"`
+	Brand           pgtype.Text        `json:"brand"`
+	Category        string             `json:"category"`
+	Vintage         pgtype.Text        `json:"vintage"`
+	ImageUrl        pgtype.Text        `json:"image_url"`
+	NameNormalized  string             `json:"name_normalized"`
+	BrandNormalized pgtype.Text        `json:"brand_normalized"`
+	TotalReviews    pgtype.Int4        `json:"total_reviews"`
+	AvgRating       pgtype.Numeric     `json:"avg_rating"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+}
+
+type BeverageSummary struct {
+	BeverageID        pgtype.UUID        `json:"beverage_id"`
+	SummaryText       string             `json:"summary_text"`
+	DescriptorsJson   []byte             `json:"descriptors_json"`
+	ProsJson          []byte             `json:"pros_json"`
+	ConsJson          []byte             `json:"cons_json"`
+	CoverageScore     pgtype.Numeric     `json:"coverage_score"`
+	SourceReviewCount pgtype.Int4        `json:"source_review_count"`
+	Model             pgtype.Text        `json:"model"`
+	ModelVersion      pgtype.Text        `json:"model_version"`
+	GeneratedAt       pgtype.Timestamptz `json:"generated_at"`
+	UpdatedAt         pgtype.Timestamptz `json:"updated_at"`
+}
+
+type BeverageTagAggregate struct {
+	BeverageID pgtype.UUID        `json:"beverage_id"`
+	Tag        string             `json:"tag"`
+	TagType    string             `json:"tag_type"`
+	Count      int32              `json:"count"`
+	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
+}
+
 type CocktailPostDetail struct {
 	ID             pgtype.UUID        `json:"id"`
 	BaseSpirit     pgtype.Text        `json:"base_spirit"`
@@ -51,6 +88,18 @@ type Medium struct {
 	ThumbnailObjectKey pgtype.Text        `json:"thumbnail_object_key"`
 }
 
+type OpenaiJob struct {
+	ID         pgtype.UUID        `json:"id"`
+	JobType    string             `json:"job_type"`
+	BeverageID pgtype.UUID        `json:"beverage_id"`
+	PostID     pgtype.UUID        `json:"post_id"`
+	Status     string             `json:"status"`
+	Attempts   pgtype.Int4        `json:"attempts"`
+	LastError  pgtype.Text        `json:"last_error"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
+}
+
 type Post struct {
 	ID                    pgtype.UUID        `json:"id"`
 	UserID                pgtype.UUID        `json:"user_id"`
@@ -67,6 +116,7 @@ type Post struct {
 	CreatedAt             pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt             pgtype.Timestamptz `json:"updated_at"`
 	Score                 pgtype.Numeric     `json:"score"`
+	BeverageID            pgtype.UUID        `json:"beverage_id"`
 }
 
 type PostMedium struct {
@@ -75,6 +125,24 @@ type PostMedium struct {
 	MediaID   pgtype.UUID        `json:"media_id"`
 	SortOrder int32              `json:"sort_order"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
+}
+
+type PostTag struct {
+	ID         pgtype.UUID        `json:"id"`
+	PostID     pgtype.UUID        `json:"post_id"`
+	BeverageID pgtype.UUID        `json:"beverage_id"`
+	Tag        string             `json:"tag"`
+	TagType    string             `json:"tag_type"`
+	Confidence pgtype.Numeric     `json:"confidence"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+}
+
+type RecommendationFeedback struct {
+	ID           pgtype.UUID        `json:"id"`
+	UserID       pgtype.UUID        `json:"user_id"`
+	BeverageID   pgtype.UUID        `json:"beverage_id"`
+	FeedbackType string             `json:"feedback_type"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
 }
 
 type RefreshToken struct {
@@ -97,6 +165,27 @@ type User struct {
 	PasswordHash  string             `json:"password_hash"`
 	CreatedAt     pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
+}
+
+type UserEmbedding struct {
+	UserID          pgtype.UUID        `json:"user_id"`
+	Category        string             `json:"category"`
+	EmbeddingText   string             `json:"embedding_text"`
+	EmbeddingVector []float32          `json:"embedding_vector"`
+	Model           pgtype.Text        `json:"model"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+}
+
+type UserTasteProfile struct {
+	UserID           pgtype.UUID        `json:"user_id"`
+	Category         string             `json:"category"`
+	LikedTagsJson    []byte             `json:"liked_tags_json"`
+	DislikedTagsJson []byte             `json:"disliked_tags_json"`
+	MeanRating       pgtype.Numeric     `json:"mean_rating"`
+	StdRating        pgtype.Numeric     `json:"std_rating"`
+	PostCount        pgtype.Int4        `json:"post_count"`
+	LastComputedAt   pgtype.Timestamptz `json:"last_computed_at"`
+	UpdatedAt        pgtype.Timestamptz `json:"updated_at"`
 }
 
 type Venue struct {

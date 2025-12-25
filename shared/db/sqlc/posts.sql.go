@@ -98,7 +98,7 @@ func (q *Queries) CreateCocktailPostDetails(ctx context.Context, arg CreateCockt
 const createPost = `-- name: CreatePost :one
 INSERT INTO posts (user_id, venue_id, drink_name, drink_category, stars, score, notes, beer_post_details_id, wine_post_details_id, cocktail_post_details_id)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-RETURNING id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score
+RETURNING id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score, beverage_id
 `
 
 type CreatePostParams struct {
@@ -144,6 +144,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Score,
+		&i.BeverageID,
 	)
 	return i, err
 }
@@ -250,7 +251,7 @@ func (q *Queries) GetCocktailPostDetails(ctx context.Context, id pgtype.UUID) (C
 }
 
 const getPostByID = `-- name: GetPostByID :one
-SELECT id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score FROM posts WHERE id = $1
+SELECT id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score, beverage_id FROM posts WHERE id = $1
 `
 
 func (q *Queries) GetPostByID(ctx context.Context, id pgtype.UUID) (Post, error) {
@@ -272,6 +273,7 @@ func (q *Queries) GetPostByID(ctx context.Context, id pgtype.UUID) (Post, error)
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Score,
+		&i.BeverageID,
 	)
 	return i, err
 }
@@ -301,7 +303,7 @@ func (q *Queries) GetWinePostDetails(ctx context.Context, id pgtype.UUID) (WineP
 }
 
 const listPosts = `-- name: ListPosts :many
-SELECT id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score FROM posts ORDER BY created_at DESC LIMIT $1
+SELECT id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score, beverage_id FROM posts ORDER BY created_at DESC LIMIT $1
 `
 
 func (q *Queries) ListPosts(ctx context.Context, limit int32) ([]Post, error) {
@@ -329,6 +331,7 @@ func (q *Queries) ListPosts(ctx context.Context, limit int32) ([]Post, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Score,
+			&i.BeverageID,
 		); err != nil {
 			return nil, err
 		}
@@ -341,7 +344,7 @@ func (q *Queries) ListPosts(ctx context.Context, limit int32) ([]Post, error) {
 }
 
 const listPostsByExternalPlaceID = `-- name: ListPostsByExternalPlaceID :many
-SELECT p.id, p.user_id, p.venue_id, p.drink_name, p.drink_category, p.stars, p.notes, p.wine_post_details_id, p.beer_post_details_id, p.cocktail_post_details_id, p.price_cents, p.photo_url, p.created_at, p.updated_at, p.score FROM posts p
+SELECT p.id, p.user_id, p.venue_id, p.drink_name, p.drink_category, p.stars, p.notes, p.wine_post_details_id, p.beer_post_details_id, p.cocktail_post_details_id, p.price_cents, p.photo_url, p.created_at, p.updated_at, p.score, p.beverage_id FROM posts p
 JOIN venues v ON p.venue_id = v.id
 WHERE v.external_place_id = $1
 ORDER BY p.created_at DESC
@@ -372,6 +375,7 @@ func (q *Queries) ListPostsByExternalPlaceID(ctx context.Context, externalPlaceI
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Score,
+			&i.BeverageID,
 		); err != nil {
 			return nil, err
 		}
@@ -477,7 +481,7 @@ const updatePost = `-- name: UpdatePost :one
 UPDATE posts
 SET drink_name = $2, stars = $3, score = $4, notes = $5, updated_at = NOW()
 WHERE id = $1
-RETURNING id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score
+RETURNING id, user_id, venue_id, drink_name, drink_category, stars, notes, wine_post_details_id, beer_post_details_id, cocktail_post_details_id, price_cents, photo_url, created_at, updated_at, score, beverage_id
 `
 
 type UpdatePostParams struct {
@@ -513,6 +517,7 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Score,
+		&i.BeverageID,
 	)
 	return i, err
 }

@@ -13,25 +13,57 @@ import (
 type Querier interface {
 	AttachMediaToPost(ctx context.Context, arg AttachMediaToPostParams) (PostMedium, error)
 	CreateBeerPostDetails(ctx context.Context, arg CreateBeerPostDetailsParams) (BeerPostDetail, error)
+	CreateBeverage(ctx context.Context, arg CreateBeverageParams) (Beverage, error)
 	CreateCocktailPostDetails(ctx context.Context, arg CreateCocktailPostDetailsParams) (CocktailPostDetail, error)
 	CreateMedia(ctx context.Context, arg CreateMediaParams) (Medium, error)
+	CreateOpenAIJob(ctx context.Context, arg CreateOpenAIJobParams) (OpenaiJob, error)
 	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
+	CreatePostTag(ctx context.Context, arg CreatePostTagParams) (PostTag, error)
+	// Recommendation Feedback
+	CreateRecommendationFeedback(ctx context.Context, arg CreateRecommendationFeedbackParams) (RecommendationFeedback, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateVenue(ctx context.Context, arg CreateVenueParams) (Venue, error)
 	CreateWinePostDetails(ctx context.Context, arg CreateWinePostDetailsParams) (WinePostDetail, error)
+	DeleteBeverageSummary(ctx context.Context, beverageID pgtype.UUID) error
+	DeleteBeverageTagAggregates(ctx context.Context, beverageID pgtype.UUID) error
+	DeleteFeedback(ctx context.Context, arg DeleteFeedbackParams) error
+	DeleteOpenAIJob(ctx context.Context, id pgtype.UUID) error
 	DeletePost(ctx context.Context, id pgtype.UUID) error
+	DeletePostTags(ctx context.Context, postID pgtype.UUID) error
 	DeleteStagedMediaOlderThan(ctx context.Context, createdAt pgtype.Timestamptz) error
 	GetBeerPostDetails(ctx context.Context, id pgtype.UUID) (BeerPostDetail, error)
+	GetBeverageByID(ctx context.Context, id pgtype.UUID) (Beverage, error)
+	GetBeverageSummary(ctx context.Context, beverageID pgtype.UUID) (BeverageSummary, error)
+	GetBeverageTagAggregates(ctx context.Context, beverageID pgtype.UUID) ([]BeverageTagAggregate, error)
+	GetBeverageTags(ctx context.Context, beverageID pgtype.UUID) ([]GetBeverageTagsRow, error)
+	GetBeverageWithTags(ctx context.Context, id pgtype.UUID) (GetBeverageWithTagsRow, error)
 	GetCocktailPostDetails(ctx context.Context, id pgtype.UUID) (CocktailPostDetail, error)
+	GetHiddenBeveragesForUser(ctx context.Context, userID pgtype.UUID) ([]pgtype.UUID, error)
 	GetMediaByID(ctx context.Context, id pgtype.UUID) (Medium, error)
 	GetMediaByObjectKey(ctx context.Context, objectKey string) (Medium, error)
 	GetMediaForPost(ctx context.Context, postID pgtype.UUID) ([]Medium, error)
+	GetOpenAIJob(ctx context.Context, id pgtype.UUID) (OpenaiJob, error)
+	GetPendingSummaryJob(ctx context.Context, beverageID pgtype.UUID) (OpenaiJob, error)
 	GetPostByID(ctx context.Context, id pgtype.UUID) (Post, error)
+	GetPostTags(ctx context.Context, postID pgtype.UUID) ([]PostTag, error)
+	GetPostsForBeverage(ctx context.Context, arg GetPostsForBeverageParams) ([]Post, error)
+	GetQueuedJobs(ctx context.Context, limit int32) ([]OpenaiJob, error)
+	// Recommendation Candidates
+	GetRecommendationCandidates(ctx context.Context, arg GetRecommendationCandidatesParams) ([]GetRecommendationCandidatesRow, error)
 	GetRefreshTokenByHash(ctx context.Context, tokenHash string) (RefreshToken, error)
 	GetThumbnailForPost(ctx context.Context, dollar_1 pgtype.Text) (string, error)
+	GetTopReviewsForBeverage(ctx context.Context, arg GetTopReviewsForBeverageParams) ([]Post, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByEmailOrHandle(ctx context.Context, email string) (User, error)
 	GetUserByID(ctx context.Context, id pgtype.UUID) (User, error)
+	// User Embeddings (optional)
+	GetUserEmbedding(ctx context.Context, arg GetUserEmbeddingParams) (UserEmbedding, error)
+	GetUserFeedback(ctx context.Context, userID pgtype.UUID) ([]RecommendationFeedback, error)
+	GetUserFeedbackForBeverage(ctx context.Context, arg GetUserFeedbackForBeverageParams) ([]RecommendationFeedback, error)
+	GetUserPostCountByCategory(ctx context.Context, arg GetUserPostCountByCategoryParams) (int64, error)
+	GetUserPostsForCategory(ctx context.Context, arg GetUserPostsForCategoryParams) ([]GetUserPostsForCategoryRow, error)
+	// User Taste Profiles
+	GetUserTasteProfile(ctx context.Context, arg GetUserTasteProfileParams) (UserTasteProfile, error)
 	GetVenueByExternalPlaceID(ctx context.Context, externalPlaceID pgtype.Text) (Venue, error)
 	GetVenueByID(ctx context.Context, id pgtype.UUID) (Venue, error)
 	GetWinePostDetails(ctx context.Context, id pgtype.UUID) (WinePostDetail, error)
@@ -42,13 +74,20 @@ type Querier interface {
 	ListVenues(ctx context.Context, arg ListVenuesParams) ([]Venue, error)
 	RevokeAllRefreshTokensForUser(ctx context.Context, userID pgtype.UUID) error
 	RevokeRefreshToken(ctx context.Context, id pgtype.UUID) error
+	SearchBeveragesByTokens(ctx context.Context, arg SearchBeveragesByTokensParams) ([]SearchBeveragesByTokensRow, error)
 	SearchVenues(ctx context.Context, arg SearchVenuesParams) ([]Venue, error)
 	UpdateBeerPostDetails(ctx context.Context, arg UpdateBeerPostDetailsParams) (BeerPostDetail, error)
+	UpdateBeverageStats(ctx context.Context, arg UpdateBeverageStatsParams) error
 	UpdateCocktailPostDetails(ctx context.Context, arg UpdateCocktailPostDetailsParams) (CocktailPostDetail, error)
 	UpdateMediaMetadata(ctx context.Context, arg UpdateMediaMetadataParams) (Medium, error)
 	UpdateMediaStatus(ctx context.Context, arg UpdateMediaStatusParams) (Medium, error)
+	UpdateOpenAIJobStatus(ctx context.Context, arg UpdateOpenAIJobStatusParams) error
 	UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error)
 	UpdateWinePostDetails(ctx context.Context, arg UpdateWinePostDetailsParams) (WinePostDetail, error)
+	UpsertBeverageSummary(ctx context.Context, arg UpsertBeverageSummaryParams) (BeverageSummary, error)
+	UpsertBeverageTagAggregate(ctx context.Context, arg UpsertBeverageTagAggregateParams) error
+	UpsertUserEmbedding(ctx context.Context, arg UpsertUserEmbeddingParams) (UserEmbedding, error)
+	UpsertUserTasteProfile(ctx context.Context, arg UpsertUserTasteProfileParams) (UserTasteProfile, error)
 }
 
 var _ Querier = (*Queries)(nil)

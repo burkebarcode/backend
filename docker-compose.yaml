@@ -69,6 +69,10 @@ services:
       TIGRIS_BUCKET: barcode-s3
       TIGRIS_REGION: auto
       TIGRIS_SECRET_KEY: "tsec_t3o7dwPe_jLs_QXbPWR4R44DRfosFnQUOm5v+ny9To9MeKZ8azmMq2Y5LbO1FwgaRqDSMF"
+      # Phase 2: OpenAI Configuration
+      OPENAI_ENABLED: ${OPENAI_ENABLED:-false}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
 
     depends_on:
       - postgres
